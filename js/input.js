@@ -125,7 +125,7 @@ class InputHandler {
                 this.game.confirmRestart();
                 break;
             case KEYS.ESC:
-                this.game.confirmExit();
+                this.game.pauseGame();
                 break;
         }
     }

@@ -35,6 +35,10 @@ class Game {
         this.lockDelayTimer = null;
         this.lockMoveCounter = 0; // Counter for moves during lock delay
         
+        // Spawn protection
+        this.spawnProtectionActive = false;
+        this.spawnProtectionTimer = null;
+        
         // Statistics
         this.statistics = {
             I: 0,
@@ -88,7 +92,8 @@ class Game {
         this.finalLinesElement = document.getElementById('final-lines');
         
         // Level select
-        this.levelSelectElement = document.getElementById('level-select');
+        this.selectedLevel = 1; // Default starting level
+        this.levelButtons = document.querySelectorAll('.level-btn');
     }
 
     /**
@@ -96,9 +101,25 @@ class Game {
      */
     setupEventListeners() {
         // Menu buttons
-        document.getElementById('start-game').addEventListener('click', () => this.startGame());
         document.getElementById('show-controls').addEventListener('click', () => this.showControls());
         document.getElementById('show-options').addEventListener('click', () => this.showOptions());
+        
+        // Level selection buttons
+        this.levelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove selected class from all buttons
+                this.levelButtons.forEach(btn => btn.classList.remove('selected'));
+                
+                // Add selected class to clicked button
+                button.classList.add('selected');
+                
+                // Update selected level
+                this.selectedLevel = parseInt(button.getAttribute('data-level'));
+                
+                // Start the game immediately
+                this.startGame();
+            });
+        });
         
         // Pause menu buttons
         document.getElementById('resume-game').addEventListener('click', () => this.resumeGame());
@@ -190,7 +211,7 @@ class Game {
         // Reset game state
         this.board.reset();
         this.score = 0;
-        this.level = parseInt(this.levelSelectElement.value) || 1;
+        this.level = this.selectedLevel || 1;
         this.linesCleared = 0;
         this.lastTetris = false;
         this.statistics = {
@@ -207,12 +228,22 @@ class Game {
         this.heldTetromino = null;
         this.canHold = true;
         
+        // Reset spawn protection
+        this.spawnProtectionActive = false;
+        if (this.spawnProtectionTimer) {
+            clearTimeout(this.spawnProtectionTimer);
+            this.spawnProtectionTimer = null;
+        }
+        
         // Generate the first pieces
         this.activeTetromino = this.tetrominoGenerator.getNextTetromino();
         this.nextTetromino = this.tetrominoGenerator.peekNextType();
         
         // Update statistics
         this.statistics[this.activeTetromino.type]++;
+        
+        // Activate spawn protection for the first piece
+        this.activateSpawnProtection();
         
         // Update UI
         this.updateUI();
@@ -541,6 +572,9 @@ class Game {
     hardDrop() {
         if (this.state !== GAME_STATES.PLAYING || !this.activeTetromino) return;
         
+        // Prevent hard drop if spawn protection is active
+        if (this.spawnProtectionActive) return;
+        
         // Cancel any active lock delay
         if (this.lockDelayActive) {
             this.lockDelayActive = false;
@@ -751,8 +785,30 @@ class Game {
         // Get the next piece preview
         this.nextTetromino = this.tetrominoGenerator.peekNextType();
         
+        // Activate spawn protection to prevent accidental hard drops
+        this.activateSpawnProtection();
+        
         // Update UI
         this.updateUI();
+    }
+    
+    /**
+     * Activate spawn protection to prevent accidental hard drops
+     */
+    activateSpawnProtection() {
+        // Set spawn protection flag
+        this.spawnProtectionActive = true;
+        
+        // Clear any existing timer
+        if (this.spawnProtectionTimer) {
+            clearTimeout(this.spawnProtectionTimer);
+        }
+        
+        // Set a timer to disable spawn protection after the delay
+        this.spawnProtectionTimer = setTimeout(() => {
+            this.spawnProtectionActive = false;
+            this.spawnProtectionTimer = null;
+        }, TIMINGS.SPAWN_PROTECTION);
     }
 
     /**
@@ -797,7 +853,7 @@ class Game {
         this.score += points * this.level;
         
         // Check if level should increase
-        const newLevel = Math.floor(this.linesCleared / 10) + parseInt(this.levelSelectElement.value);
+        const newLevel = Math.floor(this.linesCleared / 10) + this.selectedLevel;
         if (newLevel > this.level) {
             this.level = newLevel;
             

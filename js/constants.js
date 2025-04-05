@@ -144,5 +144,6 @@ const ANIMATION = {
 // Game mechanics timings in milliseconds
 const TIMINGS = {
     LOCK_DELAY: 500,     // Time before a piece locks after landing
-    LOCK_RESET_MAX: 15   // Maximum number of moves/rotations before forcing lock
+    LOCK_RESET_MAX: 15,  // Maximum number of moves/rotations before forcing lock
+    SPAWN_PROTECTION: 200 // Time after spawning before hard drop is allowed
 };

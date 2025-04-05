@@ -192,13 +192,33 @@ button:hover {
     align-items: center;
 }
 
-select {
+.level-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.level-btn {
     font-family: 'Press Start 2P', cursive;
     background-color: var(--nes-black);
     color: var(--nes-white);
     border: 2px solid var(--nes-gray);
-    padding: 5px;
-    width: 80px;
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.level-btn:hover {
+    background-color: var(--nes-gray);
+}
+
+.level-btn.selected {
+    background-color: var(--nes-gray);
+    border-color: var(--nes-white);
     text-align: center;
 }
 
