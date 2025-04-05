@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NES-Style Tetris</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-area">
+            <div class="board-container">
+                <canvas id="game-board" width="320" height="640"></canvas>
+                <div class="brick-border"></div>
+            </div>
+        </div>
+        
+        <div class="info-container">
+            <div class="info-panel">
+                <div class="game-info">
+                    <div class="info-section">
+                        <h2>A-TYPE</h2>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-label">SCORE</div>
+                        <div id="score" class="info-value">0</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-label">TOP</div>
+                        <div id="top-score" class="info-value">0</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-label">LEVEL</div>
+                        <div id="level" class="info-value">1</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-label">LINES</div>
+                        <div id="lines" class="info-value">0</div>
+                    </div>
+                </div>
+                
+                <div class="next-piece-container">
+                    <div class="info-label">NEXT</div>
+                    <canvas id="next-piece" width="120" height="120"></canvas>
+                </div>
+                
+                <div class="hold-piece-container">
+                    <div class="info-label">HOLD</div>
+                    <canvas id="hold-piece" width="120" height="120"></canvas>
+                </div>
+                
+                <div class="statistics-container">
+                    <div class="info-label">STATISTICS</div>
+                    <div id="statistics" class="statistics-grid">
+                        <!-- Statistics will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game state modals -->
+    <div id="menu-modal" class="modal">
+        <div class="modal-content">
+            <h2>NES-STYLE TETRIS</h2>
+            <div class="menu-options">
+                <button id="start-game">START GAME</button>
+                <div class="level-select">
+                    <span>STARTING LEVEL:</span>
+                    <select id="level-select">
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                    </select>
+                </div>
+                <button id="show-controls">CONTROLS</button>
+                <button id="show-options">OPTIONS</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="pause-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>GAME PAUSED</h2>
+            <div class="menu-options">
+                <button id="resume-game">RESUME</button>
+                <button id="restart-game">RESTART</button>
+                <button id="exit-to-menu">EXIT TO MENU</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>GAME OVER</h2>
+            <div class="score-display">
+                <div>SCORE: <span id="final-score">0</span></div>
+                <div>LEVEL: <span id="final-level">1</span></div>
+                <div>LINES: <span id="final-lines">0</span></div>
+            </div>
+            <div class="menu-options">
+                <button id="play-again">PLAY AGAIN</button>
+                <button id="game-over-exit">EXIT TO MENU</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="restart-confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>RESTART GAME?</h2>
+            <p>Are you sure you want to restart the game?</p>
+            <div class="menu-options">
+                <button id="confirm-restart">YES, RESTART</button>
+                <button id="cancel-restart">NO, CONTINUE</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="controls-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>CONTROLS</h2>
+            <div class="controls-list">
+                <div class="control-item">
+                    <span class="key">←/→</span>
+                    <span class="action">Move Left/Right</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">↓</span>
+                    <span class="action">Soft Drop</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">↑</span>
+                    <span class="action">Rotate Clockwise</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">Z</span>
+                    <span class="action">Rotate Counter-clockwise</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">Space</span>
+                    <span class="action">Hard Drop</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">C</span>
+                    <span class="action">Hold Piece</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">P</span>
+                    <span class="action">Pause Game</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">R</span>
+                    <span class="action">Restart Game</span>
+                </div>
+                <div class="control-item">
+                    <span class="key">Esc</span>
+                    <span class="action">Return to Menu</span>
+                </div>
+            </div>
+            <button id="close-controls">CLOSE</button>
+        </div>
+    </div>
+    
+    <div id="options-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>OPTIONS</h2>
+            <div class="options-list">
+                <div class="option-item">
+                    <span class="option-label">Sound Effects</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sound-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="option-item">
+                    <span class="option-label">Music</span>
+                    <label class="switch">
+                        <input type="checkbox" id="music-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="option-item">
+                    <span class="option-label">Ghost Piece</span>
+                    <label class="switch">
+                        <input type="checkbox" id="ghost-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <button id="close-options">CLOSE</button>
+        </div>
+    </div>
+    
+    <!-- JavaScript files -->
+    <script src="js/constants.js"></script>
+    <script src="js/tetrominos.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
