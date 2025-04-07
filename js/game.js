@@ -18,43 +18,8 @@ class Game {
         );
         this.inputHandler = new InputHandler(this);
         
-        // Game state
-        this.state = GAME_STATES.MENU;
-        this.activeTetromino = null;
-        this.nextTetromino = null;
-        this.heldTetromino = null;
-        this.canHold = true;
-        this.score = 0;
-        this.level = 1;
-        this.linesCleared = 0;
-        this.lastTetris = false; // For tracking back-to-back Tetris
-        
-        // Lock delay mechanism
-        this.lockDelayActive = false;
-        this.lockDelayTimer = null;
-        this.lockMoveCounter = 0; // Counter for moves during lock delay
-        
-        // Spawn protection
-        this.spawnProtectionActive = false;
-        this.spawnProtectionTimer = null;
-        
-        // Statistics
-        this.stats = {
-            I: 0,
-            J: 0,
-            L: 0,
-            O: 0,
-            S: 0,
-            T: 0,
-            Z: 0
-        };
-        
-        // Options
-        this.options = {
-            ghostPiece: true,
-            sound: true,
-            music: true
-        };
+        // Initialize game properties
+        this.initializeProperties();
         
         // Set up DOM elements
         this.setupDomElements();
@@ -68,8 +33,54 @@ class Game {
             this.renderer.updateStatistics(this.stats, this.statisticsElement);
         }
         
+        // Apply initial visibility of statistics panel based on setting
+        this.applyStatisticsVisibility();
+        
         // Show the menu
         this.showMenu();
+    }
+
+    /**
+     * Initialize game properties
+     */
+    initializeProperties() {
+        // Game state
+        this.state = GAME_STATES.MENU;
+        this.score = 0;
+        this.level = 1;
+        this.linesCleared = 0;
+        this.lastTetris = false; // For tracking back-to-back Tetris
+        
+        // Lock delay mechanism
+        this.lockDelayActive = false;
+        this.lockDelayTimer = null;
+        this.lockMoveCounter = 0;
+        
+        // Spawn protection
+        this.spawnProtectionActive = false;
+        this.spawnProtectionTimer = null;
+        
+        // Hold piece
+        this.heldTetromino = null;
+        this.canHold = true;
+        
+        // Game options
+        this.showGhostPiece = true;
+        this.showStatistics = false; // Statistics disabled by default
+        
+        // Tetromino generator
+        this.tetrominoGenerator = new TetrominoGenerator();
+        
+        // Statistics
+        this.stats = {
+            I: 0,
+            J: 0,
+            L: 0,
+            O: 0,
+            S: 0,
+            T: 0,
+            Z: 0
+        };
     }
 
     /**
@@ -127,6 +138,7 @@ class Game {
         
         // Pause menu buttons
         document.getElementById('resume-game').addEventListener('click', () => this.resumeGame());
+        document.getElementById('pause-options').addEventListener('click', () => this.showOptionsFromPause());
         document.getElementById('restart-game').addEventListener('click', () => this.confirmRestart());
         document.getElementById('exit-to-menu').addEventListener('click', () => this.exitToMenu());
         
@@ -152,7 +164,12 @@ class Game {
         });
         
         document.getElementById('ghost-toggle').addEventListener('change', (e) => {
-            this.options.ghostPiece = e.target.checked;
+            this.showGhostPiece = e.target.checked;
+        });
+        
+        document.getElementById('stats-toggle').addEventListener('change', (e) => {
+            this.showStatistics = e.target.checked;
+            this.updateUI();
         });
     }
 
@@ -200,7 +217,21 @@ class Game {
      */
     closeOptions() {
         this.optionsModal.classList.add('hidden');
-        this.menuModal.classList.remove('hidden');
+        
+        // Return to the appropriate screen based on game state
+        if (this.state === GAME_STATES.PAUSED) {
+            this.pauseModal.classList.remove('hidden');
+        } else {
+            this.menuModal.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Show the options modal from the pause menu
+     */
+    showOptionsFromPause() {
+        this.optionsModal.classList.remove('hidden');
+        this.pauseModal.classList.add('hidden');
     }
 
     /**
@@ -392,7 +423,7 @@ class Game {
         this.renderer.drawBoard(this.board.grid);
         
         // Draw the ghost piece if enabled
-        if (this.options.ghostPiece && this.activeTetromino) {
+        if (this.showGhostPiece && this.activeTetromino) {
             const ghostY = this.board.getGhostPosition(this.activeTetromino);
             this.renderer.drawGhostPiece(this.activeTetromino, ghostY);
         }
@@ -431,6 +462,23 @@ class Game {
         
         // Update statistics
         this.renderer.updateStatistics(this.stats, this.statisticsElement);
+        
+        // Show/hide statistics panel based on user preference
+        this.applyStatisticsVisibility();
+    }
+
+    /**
+     * Apply visibility of statistics panel based on setting
+     */
+    applyStatisticsVisibility() {
+        const statsPanel = document.querySelector('.stats-panel');
+        if (statsPanel) {
+            if (this.showStatistics) {
+                statsPanel.classList.remove('hidden');
+            } else {
+                statsPanel.classList.add('hidden');
+            }
+        }
     }
 
     /**

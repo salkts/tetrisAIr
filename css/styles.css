@@ -53,6 +53,7 @@ body {
     flex-direction: row;
     gap: 20px;
     align-items: flex-start;
+    justify-content: center;
 }
 
 .game-area {
@@ -152,6 +153,13 @@ body {
     flex-direction: column;
     flex-shrink: 0;
     justify-content: space-between;
+    visibility: visible;
+}
+
+.stats-panel.hidden {
+    visibility: hidden;
+    opacity: 0;
+    width: 240px; /* Maintain width to preserve layout */
 }
 
 .stats-header {
