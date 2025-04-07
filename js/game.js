@@ -27,7 +27,6 @@ class Game {
         this.score = 0;
         this.level = 1;
         this.linesCleared = 0;
-        this.dropInterval = null;
         this.lastTetris = false; // For tracking back-to-back Tetris
         
         // Lock delay mechanism
@@ -40,7 +39,7 @@ class Game {
         this.spawnProtectionTimer = null;
         
         // Statistics
-        this.statistics = {
+        this.stats = {
             I: 0,
             J: 0,
             L: 0,
@@ -63,6 +62,12 @@ class Game {
         // Set up event listeners for UI buttons
         this.setupEventListeners();
         
+        // Initialize statistics display
+        this.statisticsElement = document.getElementById('statistics');
+        if (this.statisticsElement) {
+            this.renderer.updateStatistics(this.stats, this.statisticsElement);
+        }
+        
         // Show the menu
         this.showMenu();
     }
@@ -76,7 +81,6 @@ class Game {
         this.topScoreElement = document.getElementById('top-score');
         this.levelElement = document.getElementById('level');
         this.linesElement = document.getElementById('lines');
-        this.statisticsElement = document.getElementById('statistics');
         
         // Modal elements
         this.menuModal = document.getElementById('menu-modal');
@@ -214,7 +218,7 @@ class Game {
         this.level = this.selectedLevel || 1;
         this.linesCleared = 0;
         this.lastTetris = false;
-        this.statistics = {
+        this.stats = {
             I: 0,
             J: 0,
             L: 0,
@@ -240,7 +244,7 @@ class Game {
         this.nextTetromino = this.tetrominoGenerator.peekNextType();
         
         // Update statistics
-        this.statistics[this.activeTetromino.type]++;
+        this.stats[this.activeTetromino.type]++;
         
         // Activate spawn protection for the first piece
         this.activateSpawnProtection();
@@ -426,7 +430,7 @@ class Game {
         }
         
         // Update statistics
-        this.renderer.updateStatistics(this.statistics, this.statisticsElement);
+        this.renderer.updateStatistics(this.stats, this.statisticsElement);
     }
 
     /**
@@ -807,7 +811,7 @@ class Game {
         this.activeTetromino = this.tetrominoGenerator.getNextTetromino();
         
         // Update statistics
-        this.statistics[this.activeTetromino.type]++;
+        this.stats[this.activeTetromino.type]++;
         
         // Get the next piece preview
         this.nextTetromino = this.tetrominoGenerator.peekNextType();

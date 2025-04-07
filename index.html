@@ -8,55 +8,60 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="game-area">
-            <div class="board-container">
-                <canvas id="game-board" width="320" height="640"></canvas>
-                <div class="brick-border"></div>
+        <div class="game-layout">
+            <!-- Statistics Panel (Left Side) -->
+            <div class="stats-panel">
+                <div class="stats-header">STATISTICS</div>
+                <div id="statistics" class="statistics-grid">
+                    <!-- Statistics will be populated by JavaScript -->
+                </div>
             </div>
-        </div>
-        
-        <div class="info-container">
-            <div class="info-panel">
-                <div class="game-info">
-                    <div class="info-section">
-                        <h2>ENDLESS MODE</h2>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-label">SCORE</div>
-                        <div id="score" class="info-value">0</div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-label">TOP</div>
-                        <div id="top-score" class="info-value">0</div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-label">LEVEL</div>
-                        <div id="level" class="info-value">1</div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <div class="info-label">LINES</div>
-                        <div id="lines" class="info-value">0</div>
-                    </div>
+
+            <!-- Game Board (Center) -->
+            <div class="game-area">
+                <div class="board-container">
+                    <canvas id="game-board" width="320" height="640"></canvas>
+                    <div class="brick-border"></div>
                 </div>
-                
-                <div class="next-piece-container">
-                    <div class="info-label">NEXT</div>
-                    <canvas id="next-piece" width="120" height="120"></canvas>
-                </div>
-                
-                <div class="hold-piece-container">
-                    <div class="info-label">HOLD</div>
-                    <canvas id="hold-piece" width="120" height="120"></canvas>
-                </div>
-                
-                <div class="statistics-container">
-                    <div class="info-label">STATISTICS</div>
-                    <div id="statistics" class="statistics-grid">
-                        <!-- Statistics will be populated by JavaScript -->
+            </div>
+
+            <!-- Info Panel (Right Side) -->
+            <div class="info-container">
+                <div class="info-panel">
+                    <div class="game-info">
+                        <div class="info-section">
+                            <h2>ENDLESS MODE</h2>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-label">SCORE</div>
+                            <div id="score" class="info-value">0</div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-label">TOP</div>
+                            <div id="top-score" class="info-value">0</div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-label">LEVEL</div>
+                            <div id="level" class="info-value">1</div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-label">LINES</div>
+                            <div id="lines" class="info-value">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="next-piece-container">
+                        <div class="info-label">NEXT</div>
+                        <canvas id="next-piece" width="120" height="120"></canvas>
+                    </div>
+                    
+                    <div class="hold-piece-container">
+                        <div class="info-label">HOLD</div>
+                        <canvas id="hold-piece" width="120" height="120"></canvas>
                     </div>
                 </div>
             </div>

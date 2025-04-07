@@ -381,6 +381,9 @@ class Renderer {
         // Clear the statistics element
         statsElement.innerHTML = '';
         
+        // Define block size for statistics display
+        const statsBlockSize = 14; // Increased block size
+        
         // Create a row for each tetromino type
         for (const type of TETROMINO_TYPES) {
             const row = document.createElement('div');
@@ -388,14 +391,79 @@ class Renderer {
             
             // Create a mini tetromino preview
             const preview = document.createElement('div');
-            preview.className = 'mini-tetromino';
-            preview.style.color = COLORS[type];
-            preview.textContent = type;
+            preview.className = 'piece-preview';
+            
+            // Create a small canvas for the tetromino preview
+            const canvas = document.createElement('canvas');
+            canvas.width = 120; // Match CSS width
+            canvas.height = 60; // Match CSS height
+            preview.appendChild(canvas);
+            
+            // Draw the tetromino on the canvas
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = COLORS.BACKGROUND;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Get tetromino shape
+            const shape = SHAPES[type];
+            const color = COLORS[type];
+            
+            // Find actual dimensions of the shape (excluding empty rows/columns)
+            let minRow = shape.length, maxRow = -1, minCol = shape[0].length, maxCol = -1;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c]) {
+                        minRow = Math.min(minRow, r);
+                        maxRow = Math.max(maxRow, r);
+                        minCol = Math.min(minCol, c);
+                        maxCol = Math.max(maxCol, c);
+                    }
+                }
+            }
+            
+            // Calculate actual shape dimensions
+            const shapeHeight = (maxRow >= minRow) ? maxRow - minRow + 1 : 0;
+            const shapeWidth = (maxCol >= minCol) ? maxCol - minCol + 1 : 0;
+            
+            // Calculate pixel dimensions
+            const shapePixelWidth = shapeWidth * statsBlockSize;
+            const shapePixelHeight = shapeHeight * statsBlockSize;
+            
+            // Calculate offset to center the tetromino
+            const offsetX = Math.floor((canvas.width - shapePixelWidth) / 2);
+            const offsetY = Math.floor((canvas.height - shapePixelHeight) / 2);
+            
+            // Draw the tetromino
+            for (let r = minRow; r <= maxRow; r++) {
+                for (let c = minCol; c <= maxCol; c++) {
+                    if (shape[r][c]) {
+                        const drawX = offsetX + (c - minCol) * statsBlockSize;
+                        const drawY = offsetY + (r - minRow) * statsBlockSize;
+                        
+                        // Draw block background
+                        ctx.fillStyle = COLORS.BACKGROUND;
+                        ctx.fillRect(drawX, drawY, statsBlockSize, statsBlockSize);
+                        
+                        // Draw colored border
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(
+                            drawX + 1,
+                            drawY + 1,
+                            statsBlockSize - 2,
+                            statsBlockSize - 2
+                        );
+                        
+                        // No inner highlight (removed as requested)
+                    }
+                }
+            }
             
             // Create the count display
             const count = document.createElement('div');
             count.className = 'stat-count';
-            count.textContent = stats[type] || 0;
+            // Format count with three digits (padded with zeros)
+            count.textContent = (stats[type] || 0).toString().padStart(3, '0');
             
             // Add elements to the row
             row.appendChild(preview);
