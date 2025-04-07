@@ -281,16 +281,56 @@ class Renderer {
      * @param {Function} callback - Function to call when animation is complete
      */
     animateLineClear(completedLines, callback) {
+        // If no completed lines, just call the callback and return
+        if (!completedLines || completedLines.length === 0) {
+            callback();
+            return;
+        }
+        
         // Flash the completed lines white
         const flashCount = 3;
         let currentFlash = 0;
         
+        // Make a copy of the current board state
+        const boardCopy = this.boardCtx.getImageData(0, 0, this.boardCanvas.width, this.boardCanvas.height);
+        
         const flashInterval = setInterval(() => {
-            // Draw the flash effect
-            for (const row of completedLines) {
-                const color = currentFlash % 2 === 0 ? '#FFFFFF' : COLORS.BACKGROUND;
-                this.boardCtx.fillStyle = color;
-                this.boardCtx.fillRect(0, row * BLOCK_SIZE, this.boardCanvas.width, BLOCK_SIZE);
+            // Restore the original board state for each frame
+            this.boardCtx.putImageData(boardCopy, 0, 0);
+            
+            // Draw the flash effect only on the completed lines
+            if (currentFlash % 2 === 0) {
+                // On even flashes, draw white lines
+                for (const row of completedLines) {
+                    const y = row * BLOCK_SIZE;
+                    
+                    // White flash
+                    this.boardCtx.fillStyle = '#FFFFFF';
+                    this.boardCtx.fillRect(0, y, this.boardCanvas.width, BLOCK_SIZE);
+                    
+                    // Redraw grid lines over the flash
+                    this.boardCtx.strokeStyle = COLORS.GRID;
+                    this.boardCtx.lineWidth = 1;
+                    
+                    // Horizontal grid lines for this row
+                    this.boardCtx.beginPath();
+                    this.boardCtx.moveTo(0, y);
+                    this.boardCtx.lineTo(this.boardCanvas.width, y);
+                    this.boardCtx.stroke();
+                    
+                    this.boardCtx.beginPath();
+                    this.boardCtx.moveTo(0, y + BLOCK_SIZE);
+                    this.boardCtx.lineTo(this.boardCanvas.width, y + BLOCK_SIZE);
+                    this.boardCtx.stroke();
+                    
+                    // Vertical grid lines for this row
+                    for (let x = 0; x <= COLS; x++) {
+                        this.boardCtx.beginPath();
+                        this.boardCtx.moveTo(x * BLOCK_SIZE, y);
+                        this.boardCtx.lineTo(x * BLOCK_SIZE, y + BLOCK_SIZE);
+                        this.boardCtx.stroke();
+                    }
+                }
             }
             
             currentFlash++;

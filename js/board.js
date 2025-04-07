@@ -95,6 +95,24 @@ class Board {
     }
 
     /**
+     * Find completed lines without clearing them
+     * @returns {Array<number>} Array of row indices that are completed
+     */
+    findCompletedLines() {
+        const completedLines = [];
+        
+        // Check each row from top to bottom
+        for (let row = 0; row < ROWS; row++) {
+            // Check if the row is completely filled
+            if (this.grid[row].every(cell => cell !== 0)) {
+                completedLines.push(row);
+            }
+        }
+        
+        return completedLines;
+    }
+    
+    /**
      * Clear completed lines and return the number of lines cleared
      * @returns {number} The number of lines that were cleared
      */

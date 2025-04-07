@@ -599,26 +599,53 @@ class Game {
         // Lock the piece immediately
         this.lockTetromino();
         
-        // Check for completed lines
-        const linesCleared = this.board.clearLines();
+        // Find completed lines before clearing them
+        const completedLines = this.board.findCompletedLines();
         
-        // Update score and level
-        this.updateScore(linesCleared);
-        
-        // Check if the game is over
-        if (this.board.isGameOver()) {
-            this.endGame();
-            return;
+        if (completedLines.length > 0) {
+            // Render the board with the locked piece before animation
+            this.render();
+            
+            // Animate the line clear
+            this.renderer.animateLineClear(completedLines, () => {
+                // Clear the lines after the animation
+                const linesCleared = this.board.clearLines();
+                
+                // Update score and level
+                this.updateScore(linesCleared);
+                
+                // Check if the game is over
+                if (this.board.isGameOver()) {
+                    this.endGame();
+                    return;
+                }
+                
+                // Spawn a new tetromino
+                this.spawnTetromino();
+                
+                // Update UI
+                this.updateUI();
+                
+                // Render the updated game
+                this.render();
+            });
+        } else {
+            // No lines completed, continue with the game flow
+            // Check if the game is over
+            if (this.board.isGameOver()) {
+                this.endGame();
+                return;
+            }
+            
+            // Spawn a new tetromino
+            this.spawnTetromino();
+            
+            // Update UI
+            this.updateUI();
+            
+            // Render the updated game
+            this.render();
         }
-        
-        // Spawn a new tetromino
-        this.spawnTetromino();
-        
-        // Update UI
-        this.updateUI();
-        
-        // Render the updated game
-        this.render();
     }
 
     /**
@@ -864,11 +891,8 @@ class Game {
             this.updateUI();
         }
         
-        // Animate the line clear
-        this.renderer.animateLineClear([...Array(linesCleared).keys()].map(i => this.board.grid.length - 1 - i), () => {
-            // Update UI after animation
-            this.updateUI();
-        });
+        // Update UI after animation
+        this.updateUI();
     }
 
     /**
