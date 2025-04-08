@@ -71,14 +71,21 @@ class AudioManager {
     /**
      * Play the background music
      */
-    playMusic() {
+    async playMusic() {
         if (!this.audioContext || !this.isMusicLoaded || !this.isMusicEnabled) {
             return;
         }
         
         // If the audio context is suspended (browser policy), resume it
         if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
+            try {
+                console.log('Audio context suspended, attempting to resume...');
+                await this.audioContext.resume(); // Wait for resume to complete
+                console.log('Audio context resumed successfully.');
+            } catch (err) {
+                console.error('Failed to resume audio context:', err);
+                return; // Exit if we can't resume
+            }
         }
         
         // If music is already playing, don't start it again

@@ -307,7 +307,15 @@ class Game {
         this.state = GAME_STATES.PLAYING;
         
         // Start playing music
-        this.audioManager.playMusic();
+        this.audioManager.playMusic(); // Initial attempt
+        
+        // Fallback: Check if music started after a short delay
+        setTimeout(() => {
+            if (this.state === GAME_STATES.PLAYING && !this.audioManager.isMusicPlaying) {
+                console.log('Music did not start automatically, trying again...');
+                this.audioManager.playMusic();
+            }
+        }, 500); // Check after 1 second
         
         // Spawn the first tetromino
         this.spawnTetromino();

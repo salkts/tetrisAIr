@@ -66,17 +66,18 @@ body {
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    padding-top: 20px; /* Add space at the top */
 }
 
 .game-layout {
     display: flex;
-    flex-direction: row;
+    justify-content: center; /* Center items when wrapped */
     gap: 20px;
     align-items: flex-start;
-    justify-content: center;
 }
 
 .game-area {
+    order: 2; /* Game board in the middle by default */
     position: relative;
 }
 
@@ -108,6 +109,7 @@ body {
 }
 
 .info-container {
+    order: 3; /* Info panel right by default */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -164,6 +166,7 @@ body {
 
 /* Statistics Panel Styles */
 .stats-panel {
+    order: 1; /* Stats panel left by default */
     background-color: var(--nes-black);
     border: 4px solid var(--border-color);
     padding: 15px 10px;
@@ -435,7 +438,29 @@ button:hover {
     }
 }
 
-/* Volume slider styles */
+/* Responsive Layout Adjustments for Wrapping */
+@media (max-width: 1000px) { /* Increased breakpoint */
+    .game-layout {
+        flex-wrap: wrap; /* Allow wrapping on narrow screens */
+    }
+
+    .game-area {
+        order: 1; /* Board first when wrapped */
+    }
+
+    .info-container {
+        order: 2; /* Info second when wrapped */
+    }
+
+    .stats-panel {
+        order: 3; /* Stats last when wrapped */
+        width: 90%; /* Allow stats panel to take more width when wrapped */
+        max-width: 300px; /* Optional: constrain width */
+        margin: 0 auto 10px auto; /* Center when wrapped */
+    }
+}
+
+ /* Volume slider styles */
 .volume-control {
     display: flex;
     align-items: center;
