@@ -389,8 +389,17 @@ class MobileControls {
         
         // Define movement thresholds based on block size (assuming 32px blocks)
         const blockSize = 32;
-        const moveThreshold = blockSize * 0.3; // Reduced threshold for initial movement (30% of block)
-        const additionalMoveThreshold = blockSize * 0.5; // Reduced threshold for subsequent movements (50% of block)
+        // Horizontal movement thresholds - increased for more precision
+        const moveThresholdHorizontal = blockSize * 0.5; // 50% of block for initial horizontal movement
+        const additionalMoveThresholdHorizontal = blockSize * 0.7; // 70% of block for subsequent horizontal movements
+        
+        // Vertical movement thresholds - different values for up vs down
+        const moveThresholdDown = blockSize * 0.2; // 20% of block for initial downward movement (more sensitive)
+        const additionalMoveThresholdDown = blockSize * 0.3; // 30% of block for subsequent downward movements
+        
+        // Use standard thresholds as fallback
+        const moveThreshold = blockSize * 0.4; // 40% of block for initial movement
+        const additionalMoveThreshold = blockSize * 0.6; // 60% of block for subsequent movements
         
         // Handle horizontal movement
         if (Math.abs(totalDeltaX) > Math.abs(totalDeltaY)) {
@@ -421,11 +430,11 @@ class MobileControls {
             // Determine if we should move based on distance and time
             const shouldMove = 
                 // First movement needs less distance
-                (!this.lastMovedAtX && distanceSinceLastMove > moveThreshold) ||
+                (!this.lastMovedAtX && distanceSinceLastMove > moveThresholdHorizontal) ||
                 // Subsequent movements need more distance and some time delay
                 (this.lastMovedAtX && 
-                 distanceSinceLastMove > additionalMoveThreshold && 
-                 timeSinceLastMove > 50); // Reduced delay to 50ms between moves for more responsiveness
+                 distanceSinceLastMove > additionalMoveThresholdHorizontal && 
+                 timeSinceLastMove > 70); // Increased delay to 70ms between moves for more precision
             
             if (shouldMove) {
                 if (currentDirection === 'right') {
@@ -456,7 +465,7 @@ class MobileControls {
                 // Immediately move in the new direction
                 if (currentDirection === 'down') {
                     this.game.softDrop();
-                } else if (Math.abs(totalDeltaY) > blockSize) { // Reduced threshold for hard drop on direction change
+                } else if (Math.abs(totalDeltaY) > blockSize * 1.8) { // Increased threshold for hard drop on direction change
                     this.game.hardDrop();
                     this.resetTouchTracking();
                     return;
@@ -468,14 +477,19 @@ class MobileControls {
                 Math.abs(totalDeltaY) : 
                 Math.abs(currentY - this.lastMovedAtY);
             
-            // Determine if we should move based on distance and time
+            // Determine if we should move based on distance and time - different logic for up vs down
+            const isDownwardSwipe = currentDirection === 'down';
+            const moveThresholdToUse = isDownwardSwipe ? moveThresholdDown : moveThreshold * 1.5; // More sensitive for down, less for up
+            const additionalMoveThresholdToUse = isDownwardSwipe ? additionalMoveThresholdDown : additionalMoveThreshold * 1.5;
+            const timeDelayToUse = isDownwardSwipe ? 40 : 80; // Faster for downward movement, slower for upward
+            
             const shouldMove = 
                 // First movement needs less distance
-                (!this.lastMovedAtY && distanceSinceLastMove > moveThreshold) ||
+                (!this.lastMovedAtY && distanceSinceLastMove > moveThresholdToUse) ||
                 // Subsequent movements need more distance and some time delay
                 (this.lastMovedAtY && 
-                 distanceSinceLastMove > additionalMoveThreshold && 
-                 timeSinceLastMove > 50); // Reduced delay to 50ms between moves for more responsiveness
+                 distanceSinceLastMove > additionalMoveThresholdToUse && 
+                 timeSinceLastMove > timeDelayToUse);
             
             if (shouldMove) {
                 if (currentDirection === 'down') {
@@ -483,7 +497,7 @@ class MobileControls {
                     this.lastMovedAtY = currentY;
                     this.lastMoveTime = now;
                     this.lastMoveDirection = 'down';
-                } else if (Math.abs(totalDeltaY) > blockSize * 2) { // Hard drop requires a longer swipe
+                } else if (Math.abs(totalDeltaY) > blockSize * 3) { // Hard drop requires a much longer swipe (increased from 2x to 3x)
                     this.game.hardDrop();
                     
                     // Reset touch tracking after hard drop
@@ -550,7 +564,7 @@ class MobileControls {
                     // Vertical swipe
                     if (distY > 0) {
                         this.game.softDrop();
-                    } else if (Math.abs(distY) > blockSize * 1.5) { // Higher threshold for hard drop
+                    } else if (Math.abs(distY) > blockSize * 2.5) { // Much higher threshold for hard drop (increased from 1.5x to 2.5x)
                         // Swipe up = hard drop
                         this.game.hardDrop();
                     }

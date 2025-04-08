@@ -581,16 +581,16 @@ input:checked + .slider:before {
 /* Mobile controls containers */
 .mobile-pause-container {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 15px;
+    left: 15px;
     z-index: 100;
     pointer-events: none; /* Allow touches to pass through to the game board */
 }
 
 .mobile-hold-container {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 25px;
+    right: 25px;
     z-index: 100;
     pointer-events: none; /* Allow touches to pass through to the game board */
 }
@@ -639,8 +639,8 @@ input:checked + .slider:before {
     color: var(--nes-white);
     border: 2px solid var(--border-color);
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     font-size: 16px;
     display: flex;
     align-items: center;
@@ -653,35 +653,41 @@ input:checked + .slider:before {
     transition: opacity 0.2s, transform 0.2s;
 }
 
-/* NES-style square buttons */
 .mobile-btn.nes-style {
     border-radius: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-    border: 2px solid var(--border-color);
     width: 50px;
     height: 50px;
-    font-size: 14px;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: none;
+    transition: transform 0.1s, opacity 0.1s;
+    background-color: rgba(0, 0, 0, 0.1); /* Extremely transparent */
+    border: 1px dotted rgba(255, 255, 255, 0.2); /* Dotted very subtle border */
+    color: rgba(255, 255, 255, 0.4); /* Very transparent text */
+    opacity: 0.8;
 }
 
 /* Hover and active states for better feedback */
 .mobile-btn.nes-style:hover {
-    opacity: 0.9;
+    opacity: 0.7;
 }
 
 .mobile-btn.nes-style:active {
     transform: scale(0.95);
-    opacity: 1;
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    opacity: 0.8;
+    box-shadow: none; /* Remove shadow for cleaner look */
 }
 
 .mobile-btn.hold-btn.nes-style {
     font-size: 10px;
     letter-spacing: 1px;
+    width: 65px; /* Slightly smaller but still easy to tap */
+    height: 65px; /* Slightly smaller but still easy to tap */
+    background-color: rgba(0, 0, 0, 0.1); /* Extremely transparent */
+    border: 1px dotted rgba(255, 255, 255, 0.2); /* Dotted very subtle border */
+    color: rgba(255, 255, 255, 0.4); /* Very transparent text */
 }
 
 .mobile-btn:active {
-    background-color: rgba(160, 160, 160, 0.8);
+    background-color: rgba(0, 0, 0, 0.3); /* Darker but still very transparent when active */
     transform: scale(0.95);
 }
 
@@ -690,6 +696,18 @@ input:checked + .slider:before {
     .mobile-pause-container,
     .mobile-hold-container,
     .mobile-pieces-container {
+        display: none;
+    }
+}
+
+/* Hide info panel on mobile devices */
+@media (max-width: 800px) {
+    .info-container {
+        display: none;
+    }
+    
+    /* Hide statistics toggle in options menu */
+    .stats-option-item {
         display: none;
     }
 }
@@ -708,7 +726,9 @@ input:checked + .slider:before {
     }
     
     .mobile-btn.hold-btn.nes-style {
-        font-size: 8px;
+        font-size: 9px;
+        width: 60px; /* Slightly smaller on small screens */
+        height: 60px;
     }
     
     .mobile-btn.pause-btn.nes-style {

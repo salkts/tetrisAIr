@@ -141,6 +141,7 @@ class InputHandler {
                 // Check if any modal is open
                 const controlsModal = document.getElementById('controls-modal');
                 const optionsModal = document.getElementById('options-modal');
+                const restartConfirmModal = document.getElementById('restart-confirm-modal');
                 
                 if (!controlsModal.classList.contains('hidden')) {
                     // Close controls modal and return to pause menu
@@ -148,6 +149,10 @@ class InputHandler {
                 } else if (!optionsModal.classList.contains('hidden')) {
                     // Close options modal and return to pause menu
                     this.game.closeOptions();
+                } else if (!restartConfirmModal.classList.contains('hidden')) {
+                    // Close restart confirmation and return to pause menu
+                    restartConfirmModal.classList.add('hidden');
+                    this.game.pauseModal.classList.remove('hidden');
                 } else {
                     // Just resume the game
                     this.game.resumeGame();
@@ -183,7 +188,17 @@ class InputHandler {
                 // Select menu option
                 break;
             case KEYS.ESC:
-                // Close submenu if open
+                // Check if any modal is open
+                const controlsModal = document.getElementById('controls-modal');
+                const optionsModal = document.getElementById('options-modal');
+                
+                if (!controlsModal.classList.contains('hidden')) {
+                    // Close controls modal and return to main menu
+                    this.game.closeControls();
+                } else if (!optionsModal.classList.contains('hidden')) {
+                    // Close options modal and return to main menu
+                    this.game.closeOptions();
+                }
                 break;
         }
     }
