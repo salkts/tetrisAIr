@@ -35,3 +35,7 @@ nodejs_installer.msi
 
 # Server files (not used by GitHub Pages)
 server.js
+
+# Deployment files
+netlify.toml
+windsurf_deployment.yaml

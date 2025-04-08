@@ -576,3 +576,63 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
+
+/* Mobile Controls Styles */
+.mobile-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 100;
+    pointer-events: none; /* Allow touches to pass through to the game board */
+}
+
+.mobile-btn {
+    background-color: rgba(128, 128, 128, 0.7);
+    color: var(--nes-white);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    pointer-events: auto; /* Make buttons clickable */
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    padding: 0;
+}
+
+.mobile-btn.hold-btn {
+    font-size: 12px;
+}
+
+.mobile-btn:active {
+    background-color: rgba(160, 160, 160, 0.8);
+    transform: scale(0.95);
+}
+
+/* Hide mobile controls on desktop */
+@media (min-width: 801px) {
+    .mobile-controls {
+        display: none;
+    }
+}
+
+/* Adjust mobile controls for smaller screens */
+@media (max-width: 400px) {
+    .mobile-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 14px;
+    }
+    
+    .mobile-btn.hold-btn {
+        font-size: 10px;
+    }
+}

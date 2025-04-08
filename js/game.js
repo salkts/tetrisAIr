@@ -1173,5 +1173,11 @@ class Game {
         
         // Clean up audio manager
         this.audioManager.cleanup();
+        
+        // Remove mobile controls if they exist
+        const mobileControls = document.querySelector('.mobile-controls');
+        if (mobileControls) {
+            mobileControls.remove();
+        }
     }
 }
