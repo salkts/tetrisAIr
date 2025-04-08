@@ -710,6 +710,16 @@ input:checked + .slider:before {
     .stats-option-item {
         display: none;
     }
+    
+    /* Arrange level buttons in two rows of 3 on small screens */
+    .level-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 8px;
+        width: 100%;
+        max-width: 240px;
+    }
 }
 
 /* Adjust mobile controls for smaller screens */
