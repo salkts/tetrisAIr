@@ -153,9 +153,6 @@ class InputHandler {
                     this.game.resumeGame();
                 }
                 break;
-            case KEYS.R:
-                this.game.confirmRestart();
-                break;
         }
     }
 

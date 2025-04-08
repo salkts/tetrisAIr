@@ -1,66 +1,43 @@
 # NES-Style Tetris Game
 
-A faithful recreation of the classic NES Tetris game using HTML5, CSS3, and JavaScript. This implementation follows the original NES Tetris aesthetics while incorporating modern gameplay features.
+A modern recreation of the classic NES Tetris using HTML5, CSS3, and JavaScript, maintaining the original aesthetics with enhanced gameplay features.
 
 ## Features
 
-- Classic NES-style visual design with dark background and colored block outlines
-- Standard Tetris rules with 7 different tetromino pieces
-- Super Rotation System (SRS) with wall kicks
-- 7-bag randomizer for fair piece distribution
-- Ghost piece to help with precision placement
-- Hold piece functionality
-- Next piece preview
-- Scoring system based on the original NES Tetris
-- Level progression with increasing speed
-- Statistics tracking
-- Responsive design for different screen sizes
+- NES-style visuals with dark backgrounds and colored block outlines
+- Standard Tetris rules with 7 tetromino pieces
+- Super Rotation System (SRS) and 7-bag randomizer
+- Ghost and hold piece functionality
+- Scoring and level progression
+- Responsive design for desktop browsers
 
 ## Controls
 
-- **Left/Right Arrow**: Move piece horizontally
-- **Down Arrow**: Soft drop (accelerate descent)
-- **Up Arrow**: Rotate piece clockwise
-- **Z Key**: Rotate piece counter-clockwise
-- **Space**: Hard drop (instant placement)
-- **C Key**: Hold piece
-- **P Key**: Pause game
-- **R Key**: Restart game
-- **Esc**: Return to menu
+- **Arrow Keys**: Move and rotate pieces
+- **Space**: Hard drop
+- **C**: Hold piece
+- **P**: Pause
+- **R**: Restart (only when playing)
+- **Esc**: Menu
 
 ## How to Play
 
-1. Open `index.html` in a web browser
-2. Select your starting level (1-25)
-3. Click "START GAME" or press Enter
-4. Play the game using the controls listed above
-5. Try to clear as many lines as possible and achieve a high score
-
-## Game Modes
-
-- **A-Type (Marathon)**: Standard endless mode where you try to achieve the highest score possible
+1. Open `index.html` in a browser
+2. Select level and start the game
+3. Clear lines and aim for a high score
 
 ## Technical Details
 
-- No external dependencies required
-- Modular code architecture with separation of concerns
-- Responsive design that works on desktop browsers
-- Compatible with Chrome, Firefox, Safari, and Edge (latest versions)
+- No external dependencies
+- Modular architecture
+- Compatible with modern browsers
 
-## Development
+## Structure
 
-This project is organized into the following structure:
-
-- `index.html`: Main HTML file
-- `css/styles.css`: Main stylesheet
-- `js/main.js`: Entry point for the application
-- `js/constants.js`: Game constants and configurations
-- `js/tetrominos.js`: Tetromino definitions and operations
-- `js/board.js`: Game board logic
-- `js/game.js`: Game state and mechanics
-- `js/renderer.js`: Rendering logic
-- `js/input.js`: Input handling
+- `index.html`: Main entry
+- `css/`: Stylesheets
+- `js/`: Game logic and input handling
 
 ## License
 
-This project is created for educational purposes and is not affiliated with The Tetris Company or Nintendo.
+For educational purposes, not affiliated with The Tetris Company or Nintendo.
