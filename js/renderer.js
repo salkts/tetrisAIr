@@ -236,20 +236,43 @@ class Renderer {
         const tempTetromino = new Tetromino(holdType);
         const shape = tempTetromino.getCurrentShape();
         
-        // Calculate the center position for the preview
+        // Calculate the block size for the preview
         const blockSize = 24; // Smaller blocks for the preview
-        const offsetX = (this.holdCanvas.width - shape[0].length * blockSize) / 2;
-        const offsetY = (this.holdCanvas.height - shape.length * blockSize) / 2;
+        
+        // Find actual dimensions of the shape (excluding empty rows/columns)
+        let minRow = shape.length, maxRow = -1, minCol = shape[0].length, maxCol = -1;
+        for (let r = 0; r < shape.length; r++) {
+            for (let c = 0; c < shape[r].length; c++) {
+                if (shape[r][c]) {
+                    minRow = Math.min(minRow, r);
+                    maxRow = Math.max(maxRow, r);
+                    minCol = Math.min(minCol, c);
+                    maxCol = Math.max(maxCol, c);
+                }
+            }
+        }
+        
+        // Calculate actual shape dimensions
+        const shapeHeight = (maxRow >= minRow) ? maxRow - minRow + 1 : 0;
+        const shapeWidth = (maxCol >= minCol) ? maxCol - minCol + 1 : 0;
+        
+        // Calculate pixel dimensions
+        const shapePixelWidth = shapeWidth * blockSize;
+        const shapePixelHeight = shapeHeight * blockSize;
+        
+        // Calculate offset to center the tetromino
+        const offsetX = Math.floor((this.holdCanvas.width - shapePixelWidth) / 2);
+        const offsetY = Math.floor((this.holdCanvas.height - shapePixelHeight) / 2);
         
         // Determine the color based on whether hold is available
         const color = canHold ? COLORS[holdType] : 'rgba(128, 128, 128, 0.5)';
         
         // Draw the hold piece
-        for (let row = 0; row < shape.length; row++) {
-            for (let col = 0; col < shape[row].length; col++) {
-                if (shape[row][col]) {
-                    const blockX = offsetX + col * blockSize;
-                    const blockY = offsetY + row * blockSize;
+        for (let r = minRow; r <= maxRow; r++) {
+            for (let c = minCol; c <= maxCol; c++) {
+                if (shape[r][c]) {
+                    const blockX = offsetX + (c - minCol) * blockSize;
+                    const blockY = offsetY + (r - minRow) * blockSize;
                     
                     // Draw the block background
                     this.holdCtx.fillStyle = COLORS.BACKGROUND;

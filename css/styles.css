@@ -30,13 +30,33 @@
 
 body {
     font-family: 'Press Start 2P', cursive;
-    background-color: var(--nes-dark-blue);
+    background-color: var(--nes-black);
     color: var(--nes-white);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    position: relative;
+}
+
+/* Background stars */
+.star {
+    position: absolute;
+    background-color: var(--nes-white);
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    opacity: 0.8;
+    z-index: -2;
+}
+
+/* Background falling pieces */
+.falling-piece {
+    position: absolute;
+    z-index: -1;
+    opacity: 0.15;
+    transform: rotate(0deg);
 }
 
 .game-container {
@@ -234,6 +254,8 @@ body {
     max-width: 500px;
     width: 90%;
     text-align: center;
+    position: relative;
+    z-index: 1001;
 }
 
 .modal-content h2 {
@@ -381,6 +403,49 @@ input:checked + .slider:before {
     flex-direction: column;
     gap: 10px;
     font-size: 14px;
+}
+
+/* Volume slider styles */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--nes-gray);
+    outline: none;
+    border: 2px solid var(--nes-light-gray);
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--nes-white);
+    cursor: pointer;
+    border: 2px solid var(--nes-light-gray);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--nes-white);
+    cursor: pointer;
+    border: 2px solid var(--nes-light-gray);
+}
+
+.volume-value {
+    font-size: 10px;
+    color: var(--nes-white);
+    min-width: 40px;
+    text-align: right;
 }
 
 /* Responsive adjustments */

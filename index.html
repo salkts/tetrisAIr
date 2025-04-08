@@ -192,6 +192,13 @@
                     </label>
                 </div>
                 <div class="option-item">
+                    <span class="option-label">Music Volume</span>
+                    <div class="volume-control">
+                        <input type="range" id="music-volume" min="0" max="100" value="50" class="volume-slider">
+                        <span class="volume-value">50%</span>
+                    </div>
+                </div>
+                <div class="option-item">
                     <span class="option-label">Ghost Piece</span>
                     <label class="switch">
                         <input type="checkbox" id="ghost-toggle" checked>
@@ -215,7 +222,9 @@
     <script src="js/tetrominos.js"></script>
     <script src="js/board.js"></script>
     <script src="js/renderer.js"></script>
+    <script src="js/audio.js"></script>
     <script src="js/input.js"></script>
+    <script src="js/background.js"></script>
     <script src="js/game.js"></script>
     <script src="js/main.js"></script>
 </body>

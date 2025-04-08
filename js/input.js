@@ -139,12 +139,6 @@ class InputHandler {
             case KEYS.P:
                 this.game.resumeGame();
                 break;
-            case KEYS.R:
-                this.game.restartGame();
-                break;
-            case KEYS.ESC:
-                this.game.exitToMenu();
-                break;
         }
     }
 

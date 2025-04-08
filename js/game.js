@@ -18,6 +18,9 @@ class Game {
         );
         this.inputHandler = new InputHandler(this);
         
+        // Initialize audio manager
+        this.audioManager = new AudioManager();
+        
         // Initialize game properties
         this.initializeProperties();
         
@@ -160,7 +163,7 @@ class Game {
         });
         
         document.getElementById('music-toggle').addEventListener('change', (e) => {
-            this.options.music = e.target.checked;
+            this.audioManager.setMusicEnabled(e.target.checked);
         });
         
         document.getElementById('ghost-toggle').addEventListener('change', (e) => {
@@ -169,7 +172,17 @@ class Game {
         
         document.getElementById('stats-toggle').addEventListener('change', (e) => {
             this.showStatistics = e.target.checked;
-            this.updateUI();
+            this.applyStatisticsVisibility();
+        });
+        
+        // Music volume slider
+        const musicVolumeSlider = document.getElementById('music-volume');
+        const volumeValueDisplay = musicVolumeSlider.nextElementSibling;
+        
+        musicVolumeSlider.addEventListener('input', (e) => {
+            const volumeValue = e.target.value;
+            volumeValueDisplay.textContent = `${volumeValue}%`;
+            this.audioManager.setMusicVolume(volumeValue / 100);
         });
     }
 
@@ -238,56 +251,50 @@ class Game {
      * Start a new game
      */
     startGame() {
-        // Hide all modals
-        this.menuModal.classList.add('hidden');
-        this.pauseModal.classList.add('hidden');
-        this.gameOverModal.classList.add('hidden');
-        
-        // Reset game state
+        // Reset the board
         this.board.reset();
+        
+        // Reset game properties
         this.score = 0;
         this.level = this.selectedLevel || 1;
         this.linesCleared = 0;
         this.lastTetris = false;
-        this.stats = {
-            I: 0,
-            J: 0,
-            L: 0,
-            O: 0,
-            S: 0,
-            T: 0,
-            Z: 0
-        };
         
-        // Reset hold
+        // Reset statistics
+        for (const type of TETROMINO_TYPES) {
+            this.stats[type] = 0;
+        }
+        
+        // Update statistics display
+        if (this.statisticsElement) {
+            this.renderer.updateStatistics(this.stats, this.statisticsElement);
+        }
+        
+        // Reset hold piece
         this.heldTetromino = null;
         this.canHold = true;
         
-        // Reset spawn protection
-        this.spawnProtectionActive = false;
-        if (this.spawnProtectionTimer) {
-            clearTimeout(this.spawnProtectionTimer);
-            this.spawnProtectionTimer = null;
-        }
+        // Hide all modals
+        this.menuModal.classList.add('hidden');
+        this.gameOverModal.classList.add('hidden');
         
-        // Generate the first pieces
-        this.activeTetromino = this.tetrominoGenerator.getNextTetromino();
-        this.nextTetromino = this.tetrominoGenerator.peekNextType();
-        
-        // Update statistics
-        this.stats[this.activeTetromino.type]++;
-        
-        // Activate spawn protection for the first piece
-        this.activateSpawnProtection();
-        
-        // Update UI
-        this.updateUI();
-        
-        // Set game state to playing
+        // Set the game state to playing
         this.state = GAME_STATES.PLAYING;
+        
+        // Start playing music
+        this.audioManager.playMusic();
+        
+        // Spawn the first tetromino
+        this.spawnTetromino();
+        
+        // Update the drop speed based on the level
+        this.updateDropSpeed();
         
         // Start the game loop
         this.startGameLoop();
+        
+        // Update the UI
+        this.updateUI();
     }
 
     /**
@@ -982,6 +989,9 @@ class Game {
         if (this.dropInterval) {
             clearInterval(this.dropInterval);
         }
+        
+        // Pause the music
+        this.audioManager.pauseMusic();
     }
 
     /**
@@ -998,6 +1008,9 @@ class Game {
         
         // Restart the drop interval
         this.startGameLoop();
+        
+        // Resume the music
+        this.audioManager.playMusic();
     }
 
     /**
@@ -1085,6 +1098,9 @@ class Game {
             clearInterval(this.dropInterval);
         }
         
+        // Stop the music
+        this.audioManager.pauseMusic();
+        
         // Update high score if needed
         const topScore = localStorage.getItem('tetrisTopScore') || 0;
         if (this.score > topScore) {
@@ -1119,5 +1135,8 @@ class Game {
         
         // Clean up input handler
         this.inputHandler.cleanup();
+        
+        // Clean up audio manager
+        this.audioManager.cleanup();
     }
 }
