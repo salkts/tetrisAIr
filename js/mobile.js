@@ -55,6 +55,7 @@ class MobileControls {
         // Set up mobile controls if on mobile
         if (this.isMobile) {
             this.setupMobileControls();
+            this.setupMobilePieceContainers(); // Add mobile-specific next and hold containers
             this.setupEventListeners();
             
             if (this.debugMode) {
@@ -94,30 +95,35 @@ class MobileControls {
      * Set up mobile controls container and buttons
      */
     setupMobileControls() {
-        // Create mobile controls container
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'mobile-controls';
+        // Create a separate container for the pause button at the top left
+        const pauseContainer = document.createElement('div');
+        pauseContainer.className = 'mobile-pause-container';
         
-        // Create pause button
+        // Create a separate container for the hold button at the bottom right
+        const holdContainer = document.createElement('div');
+        holdContainer.className = 'mobile-hold-container';
+        
+        // Create pause button with NES-style square design
         const pauseButton = document.createElement('button');
-        pauseButton.className = 'mobile-btn pause-btn';
-        pauseButton.innerHTML = 'II';
+        pauseButton.className = 'mobile-btn pause-btn nes-style';
+        pauseButton.innerHTML = '❚❚';
         pauseButton.setAttribute('aria-label', 'Pause Game');
         
-        // Create hold button
+        // Create hold button with NES-style square design
         const holdButton = document.createElement('button');
-        holdButton.className = 'mobile-btn hold-btn';
+        holdButton.className = 'mobile-btn hold-btn nes-style';
         holdButton.innerHTML = 'HOLD';
         holdButton.setAttribute('aria-label', 'Hold Piece');
         
-        // Add buttons to container
-        controlsContainer.appendChild(pauseButton);
-        controlsContainer.appendChild(holdButton);
+        // Add buttons to their containers
+        pauseContainer.appendChild(pauseButton);
+        holdContainer.appendChild(holdButton);
         
-        // Add container to the game area
+        // Add containers to the game area
         const gameArea = document.querySelector('.game-area');
         if (gameArea) {
-            gameArea.appendChild(controlsContainer);
+            gameArea.appendChild(pauseContainer);
+            gameArea.appendChild(holdContainer);
         }
         
         // Set up button event listeners
@@ -186,7 +192,7 @@ class MobileControls {
                 { action: 'Tap', description: 'Rotate Clockwise' },
                 { action: 'Swipe Up', description: 'Hard Drop' },
                 { action: 'HOLD Button', description: 'Hold Piece' },
-                { action: 'II Button', description: 'Pause Game' }
+                { action: '❚❚ Button', description: 'Pause Game' }
             ];
             
             mobileControls.forEach(control => {
@@ -575,16 +581,22 @@ class MobileControls {
      * Clean up event listeners and DOM elements
      */
     cleanup() {
-        // Remove mobile controls if they exist
-        const mobileControls = document.querySelector('.mobile-controls');
-        if (mobileControls) {
-            mobileControls.remove();
-        }
+        // Remove mobile controls elements if they exist
+        const mobileElements = document.querySelectorAll('.mobile-pause-container, .mobile-hold-container, .mobile-pieces-container');
+        mobileElements.forEach(element => {
+            if (element) element.remove();
+        });
         
         // Remove debug element if it exists
         if (this.debugElement) {
             this.debugElement.remove();
             this.debugElement = null;
+        }
+        
+        // Clear any intervals
+        if (this.syncInterval) {
+            clearInterval(this.syncInterval);
+            this.syncInterval = null;
         }
         
         // Remove event listeners from game board without replacing the element
@@ -601,5 +613,99 @@ class MobileControls {
                 console.log('Removed event listeners from game board');
             }
         }
+    }
+    
+    /**
+     * Set up mobile-specific next and hold piece containers
+     * These will appear in the top right of the board
+     */
+    setupMobilePieceContainers() {
+        // Create container for both next and hold pieces
+        const piecesContainer = document.createElement('div');
+        piecesContainer.className = 'mobile-pieces-container';
+        
+        // Create mobile next piece container
+        const nextContainer = document.createElement('div');
+        nextContainer.className = 'mobile-next-container';
+        
+        // Create mobile hold piece container
+        const holdContainer = document.createElement('div');
+        holdContainer.className = 'mobile-hold-container-box';
+        
+        // Add labels
+        const nextLabel = document.createElement('div');
+        nextLabel.className = 'mobile-piece-label';
+        nextLabel.textContent = 'NEXT';
+        
+        const holdLabel = document.createElement('div');
+        holdLabel.className = 'mobile-piece-label';
+        holdLabel.textContent = 'HOLD';
+        
+        // Create canvases for pieces
+        const nextCanvas = document.createElement('canvas');
+        nextCanvas.id = 'mobile-next-piece';
+        nextCanvas.width = 80;
+        nextCanvas.height = 80;
+        
+        const holdCanvas = document.createElement('canvas');
+        holdCanvas.id = 'mobile-hold-piece';
+        holdCanvas.width = 80;
+        holdCanvas.height = 80;
+        
+        // Add elements to containers
+        nextContainer.appendChild(nextLabel);
+        nextContainer.appendChild(nextCanvas);
+        
+        holdContainer.appendChild(holdLabel);
+        holdContainer.appendChild(holdCanvas);
+        
+        // Add containers to main container
+        piecesContainer.appendChild(nextContainer);
+        piecesContainer.appendChild(holdContainer);
+        
+        // Add container to the game area
+        const gameArea = document.querySelector('.game-area');
+        if (gameArea) {
+            gameArea.appendChild(piecesContainer);
+        }
+        
+        // Set up synchronization with the main next and hold pieces
+        this.syncMobilePieces();
+    }
+    
+    /**
+     * Synchronize mobile piece displays with the main next and hold pieces
+     */
+    syncMobilePieces() {
+        // Get references to the original canvases
+        const originalNextCanvas = document.getElementById('next-piece');
+        const originalHoldCanvas = document.getElementById('hold-piece');
+        
+        // Get references to the mobile canvases
+        const mobileNextCanvas = document.getElementById('mobile-next-piece');
+        const mobileHoldCanvas = document.getElementById('mobile-hold-piece');
+        
+        if (!originalNextCanvas || !originalHoldCanvas || !mobileNextCanvas || !mobileHoldCanvas) {
+            console.error('Could not find all required canvas elements');
+            return;
+        }
+        
+        // Function to copy canvas content
+        const copyCanvas = (source, destination) => {
+            const destCtx = destination.getContext('2d');
+            destCtx.clearRect(0, 0, destination.width, destination.height);
+            destCtx.drawImage(source, 0, 0, source.width, source.height, 
+                             0, 0, destination.width, destination.height);
+        };
+        
+        // Initial copy
+        copyCanvas(originalNextCanvas, mobileNextCanvas);
+        copyCanvas(originalHoldCanvas, mobileHoldCanvas);
+        
+        // Set up an interval to ensure synchronization
+        this.syncInterval = setInterval(() => {
+            copyCanvas(originalNextCanvas, mobileNextCanvas);
+            copyCanvas(originalHoldCanvas, mobileHoldCanvas);
+        }, 500); // Update every 500ms
     }
 }
