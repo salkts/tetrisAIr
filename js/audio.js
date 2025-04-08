@@ -157,10 +157,11 @@ class AudioManager {
         // Clamp volume between 0 and 1
         this.musicVolume = Math.max(0, Math.min(1, volume));
         
-        // Apply volume to gain node
-        this.musicGainNode.gain.value = this.musicVolume;
+        // Apply volume to gain node using an exponential curve for better perceived volume control
+        // This provides a more natural volume increase, especially in the higher ranges
+        this.musicGainNode.gain.value = this.musicVolume * this.musicVolume;
         
-        console.log(`Music volume set to ${this.musicVolume}`);
+        console.log(`Music volume set to ${this.musicVolume} (gain: ${this.musicGainNode.gain.value})`);
     }
     
     /**

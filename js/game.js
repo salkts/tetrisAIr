@@ -36,8 +36,11 @@ class Game {
             this.renderer.updateStatistics(this.stats, this.statisticsElement);
         }
         
-        // Apply initial visibility of statistics panel based on setting
-        this.applyStatisticsVisibility();
+        // Ensure statistics panel is hidden initially
+        const statsPanel = document.querySelector('.stats-panel');
+        if (statsPanel) {
+            statsPanel.classList.add('hidden');
+        }
         
         // Show the menu
         this.showMenu();
@@ -141,6 +144,7 @@ class Game {
         
         // Pause menu buttons
         document.getElementById('resume-game').addEventListener('click', () => this.resumeGame());
+        document.getElementById('pause-controls').addEventListener('click', () => this.showControlsFromPause());
         document.getElementById('pause-options').addEventListener('click', () => this.showOptionsFromPause());
         document.getElementById('restart-game').addEventListener('click', () => this.confirmRestart());
         document.getElementById('exit-to-menu').addEventListener('click', () => this.exitToMenu());
@@ -158,12 +162,28 @@ class Game {
         document.getElementById('close-options').addEventListener('click', () => this.closeOptions());
         
         // Options toggles
-        document.getElementById('sound-toggle').addEventListener('change', (e) => {
-            this.options.sound = e.target.checked;
+        document.getElementById('music-toggle').addEventListener('change', (e) => {
+            const isMusicEnabled = e.target.checked;
+            this.audioManager.setMusicEnabled(isMusicEnabled);
+            
+            // Enable/disable the volume slider based on music toggle state
+            const musicVolumeSlider = document.getElementById('music-volume');
+            musicVolumeSlider.disabled = !isMusicEnabled;
+            musicVolumeSlider.parentElement.classList.toggle('disabled', !isMusicEnabled);
         });
         
-        document.getElementById('music-toggle').addEventListener('change', (e) => {
-            this.audioManager.setMusicEnabled(e.target.checked);
+        // Music volume slider
+        const musicVolumeSlider = document.getElementById('music-volume');
+        const volumeValueDisplay = musicVolumeSlider.nextElementSibling;
+        
+        // Set initial state of volume slider based on music toggle
+        musicVolumeSlider.disabled = !document.getElementById('music-toggle').checked;
+        musicVolumeSlider.parentElement.classList.toggle('disabled', !document.getElementById('music-toggle').checked);
+        
+        musicVolumeSlider.addEventListener('input', (e) => {
+            const volumeValue = e.target.value;
+            volumeValueDisplay.textContent = `${volumeValue}%`;
+            this.audioManager.setMusicVolume(volumeValue / 100);
         });
         
         document.getElementById('ghost-toggle').addEventListener('change', (e) => {
@@ -173,16 +193,6 @@ class Game {
         document.getElementById('stats-toggle').addEventListener('change', (e) => {
             this.showStatistics = e.target.checked;
             this.applyStatisticsVisibility();
-        });
-        
-        // Music volume slider
-        const musicVolumeSlider = document.getElementById('music-volume');
-        const volumeValueDisplay = musicVolumeSlider.nextElementSibling;
-        
-        musicVolumeSlider.addEventListener('input', (e) => {
-            const volumeValue = e.target.value;
-            volumeValueDisplay.textContent = `${volumeValue}%`;
-            this.audioManager.setMusicVolume(volumeValue / 100);
         });
     }
 
@@ -214,7 +224,14 @@ class Game {
      */
     closeControls() {
         this.controlsModal.classList.add('hidden');
-        this.menuModal.classList.remove('hidden');
+        
+        // If we came from the pause menu, show it again
+        if (this.state === GAME_STATES.PAUSED) {
+            this.pauseModal.classList.remove('hidden');
+        } else {
+            // Otherwise, show the main menu
+            this.menuModal.classList.remove('hidden');
+        }
     }
 
     /**
@@ -244,6 +261,14 @@ class Game {
      */
     showOptionsFromPause() {
         this.optionsModal.classList.remove('hidden');
+        this.pauseModal.classList.add('hidden');
+    }
+
+    /**
+     * Show the controls modal from the pause menu
+     */
+    showControlsFromPause() {
+        this.controlsModal.classList.remove('hidden');
         this.pauseModal.classList.add('hidden');
     }
 
@@ -939,7 +964,9 @@ class Game {
         this.score += points * this.level;
         
         // Check if level should increase
-        const newLevel = Math.floor(this.linesCleared / 10) + this.selectedLevel;
+        // In the original Tetris, level corresponds to the number of lines cleared divided by 10
+        // Level 17 at 170 lines, level 21 at 210 lines, etc.
+        const newLevel = Math.max(this.selectedLevel, Math.floor(this.linesCleared / 10) + 1);
         if (newLevel > this.level) {
             this.level = newLevel;
             

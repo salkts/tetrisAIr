@@ -137,7 +137,24 @@ class InputHandler {
     handlePausedState(key) {
         switch (key) {
             case KEYS.P:
-                this.game.resumeGame();
+            case KEYS.ESC:
+                // Check if any modal is open
+                const controlsModal = document.getElementById('controls-modal');
+                const optionsModal = document.getElementById('options-modal');
+                
+                if (!controlsModal.classList.contains('hidden')) {
+                    // Close controls modal and return to pause menu
+                    this.game.closeControls();
+                } else if (!optionsModal.classList.contains('hidden')) {
+                    // Close options modal and return to pause menu
+                    this.game.closeOptions();
+                } else {
+                    // Just resume the game
+                    this.game.resumeGame();
+                }
+                break;
+            case KEYS.R:
+                this.game.confirmRestart();
                 break;
         }
     }
@@ -150,9 +167,6 @@ class InputHandler {
         switch (key) {
             case KEYS.R:
                 this.game.restartGame();
-                break;
-            case KEYS.ESC:
-                this.game.exitToMenu();
                 break;
         }
     }
