@@ -29,3 +29,9 @@ build/
 # Logs
 logs
 *.log
+
+# Installers
+nodejs_installer.msi
+
+# Server files (not used by GitHub Pages)
+server.js
