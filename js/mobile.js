@@ -549,25 +549,18 @@ class MobileControls {
         }
         // Check if it was a final swipe action that wasn't handled during move events
         else if (totalDistance >= blockSize * 0.5) {
-            // Only handle if we haven't moved recently (within 100ms)
+            // Only handle if we haven't moved recently (within 100ms) AND this is a vertical swipe
+            // We'll disable horizontal movements on touch end to prevent the double-movement issue
             const timeSinceLastMove = Date.now() - (this.lastMoveTime || 0);
-            if (timeSinceLastMove > 100) {
-                // Determine primary direction (horizontal or vertical)
-                if (Math.abs(distX) > Math.abs(distY)) {
-                    // Horizontal swipe
-                    if (distX > 0) {
-                        this.game.moveRight();
-                    } else {
-                        this.game.moveLeft();
-                    }
-                } else {
-                    // Vertical swipe
-                    if (distY > 0) {
-                        this.game.softDrop();
-                    } else if (Math.abs(distY) > blockSize * 2.5) { // Much higher threshold for hard drop (increased from 1.5x to 2.5x)
-                        // Swipe up = hard drop
-                        this.game.hardDrop();
-                    }
+            const isVerticalSwipe = Math.abs(distY) > Math.abs(distX);
+            
+            if (timeSinceLastMove > 100 && isVerticalSwipe) {
+                // Only handle vertical swipes on touch end
+                if (distY > 0) {
+                    this.game.softDrop();
+                } else if (Math.abs(distY) > blockSize * 2.5) { // Much higher threshold for hard drop (increased from 1.5x to 2.5x)
+                    // Swipe up = hard drop
+                    this.game.hardDrop();
                 }
             }
         }
